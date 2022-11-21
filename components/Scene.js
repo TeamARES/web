@@ -14,9 +14,9 @@ export default function Scene() {
     return (
         <div className="w-full h-full bg-black text-[#fefefe] text-[13px] m-0 p-0 ">
             <Canvas
-                // orthographic
+                orthographic
                 dpr={[1, 2]}
-                camera={{ position: [10, 10, 10] }}
+                camera={{ position: [4, 5, 4] }}
             >
                 {/* <Plane
                         scale={[1000, 1000, 10000]}
@@ -94,8 +94,8 @@ function Rover(props) {
                     colorB="black"
                     alpha={1}
                     mode="normal"
-                    near={5 * gradient}
-                    far={5}
+                    near={10 * gradient}
+                    far={10}
                     origin={[0, 0, 0]}
                 />
                 <Depth
@@ -121,7 +121,7 @@ function Rover(props) {
                     colorB="red"
                     alpha={1}
                     mode="overlay"
-                    near={1.5 * gradient}
+                    near={15 * gradient}
                     far={15}
                     origin={[1, -1, -1]}
                 />
