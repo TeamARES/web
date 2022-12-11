@@ -1,5 +1,5 @@
 import { Canvas, useFrame, useThree, extend } from "@react-three/fiber";
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useGLTF, Bounds, Edges, Plane } from "@react-three/drei";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { LayerMaterial, Depth, Fresnel, Color } from "lamina";
@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { useLoader } from "@react-three/fiber";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
+import StatsImp from "three/addons/libs/stats.module.js";
 
 import * as THREE from "three";
 
@@ -14,9 +15,17 @@ export default function Scene() {
     return (
         <div className="w-full h-full bg-black text-[#fefefe] text-[13px] m-0 p-0 ">
             <Canvas
+                className="w-screen h-screen"
                 orthographic
-                dpr={[1, 2]}
-                camera={{ position: [4, 5, 4] }}
+                // dpr={[1, 2]}
+                camera={{
+                    position: [4, 5, 4],
+                    left: window.innerWidth / -2,
+                    right: window.innerWidth / -2,
+                    top: window.innerHeight / 2,
+                    bottom: window.innerHeight / 2,
+                    near: 0.1,
+                }}
             >
                 {/* <Plane
                         scale={[1000, 1000, 10000]}
@@ -24,26 +33,27 @@ export default function Scene() {
                         position={[0, 0, 0]}
                     /> */}
                 {/* <CameraController /> */}
-                <pointLight
+                {/* <pointLight
                     position={[0, 10, 10]}
                     intensity={1}
                     color="#00FFE7"
-                />
-                    <Bounds fit clip observe margin={1.25}>
-                <Suspense fallback={null}>
+                /> */}
+                <Bounds fit clip observe margin={1.25}>
+                    <Suspense fallback={null}>
                         <Rover
                             position={[-6, 0, -7]}
                             scale={[0.01, 0.01, 0.01]}
                             rotation-x={Math.PI * 0.5}
                             // rotation-z={Math.PI * 0.5}
                         />
-                </Suspense>
-                    </Bounds>
+                    </Suspense>
+                </Bounds>
                 <gridHelper
                     args={[100, 80, "#918e8e", "#525151"]}
                     position={[0, 1, 0]}
                     rotation={[0, 0, 0]}
                 />
+                <Stats />
                 {/* <primitive object={new THREE.AxesHelper(10)} /> */}
             </Canvas>
         </div>
@@ -79,7 +89,7 @@ function Rover(props) {
     const gltf = useLoader(GLTFLoader, "rover-processed.glb", (loader) => {
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath(
-            "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/"
+            "https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/js/libs/draco/gltf/"
         );
         loader.setDRACOLoader(dracoLoader);
     });
@@ -136,6 +146,20 @@ function Rover(props) {
             <Edges color="black" />
         </mesh>
     );
+}
+
+function Stats() {
+    const [stats, setStats] = useState(() => new StatsImp());
+    useEffect(() => {
+        stats.showPanel(0);
+        document.body.appendChild(stats.dom);
+        return () => document.body.removeChild(stats.dom);
+    }, []);
+    return useFrame((state) => {
+        stats.begin();
+        state.gl.render(state.scene, state.camera);
+        stats.end();
+    }, 1);
 }
 
 // function Cursor(props) {
